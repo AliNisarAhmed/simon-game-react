@@ -1,0 +1,12 @@
+.center {
+  width: 60%;
+  height: 60%;
+  background-color: white;
+  border: 10px solid $color-gray;
+  border-radius: 50%;
+
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}

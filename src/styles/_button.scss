@@ -1,0 +1,43 @@
+
+.btn {
+  width: 50%;
+  height: 50%;
+  border: 10px solid $color-gray;
+  outline: none;
+  
+  &:active {
+    outline: none;
+  }
+
+  &--green {
+    border-top-left-radius: 100%;
+    background-color: $color-green;
+    border-left: none;
+    border-top: none;
+  }
+
+  &--red {
+    border-top-right-radius: 100%;
+    background-color: $color-red;
+    border-right: none;
+    border-top: none;
+  }
+
+  &--blue {
+    border-bottom-left-radius: 100%;
+    background-color: $color-blue;
+    border-left: none;
+    border-bottom: none;
+  }
+
+  &--yellow {
+    border-bottom-right-radius: 100%;
+    background-color: $color-yellow;
+    border-right: none;
+    border-bottom: none;
+  }
+}
+
+// .lighter {
+//   background-color: lighten(currentColor, 15%)
+// }
