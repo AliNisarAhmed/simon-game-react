@@ -2,29 +2,99 @@ import React from 'react';
 
 import Button from './Button';
 
-interface AppState {
+import timeout from '../helperFunctions/promisedTimeOut';
 
+import { GameState } from '../enums/gameState';
+import deepEqual from '../helperFunctions/deepEqual';
+
+interface AppState {
+  sequence: string[];
+  activeButton: string;
+  gameState: GameState
+  playerSequence: string[];
 }
 
 class App extends React.Component<{}, AppState> {
 
   state: AppState = {
+    sequence: ['green', 'red'],
+    activeButton: '',
+    gameState: GameState.Off,
+    playerSequence: []
+  }
+
+  componentDidMount () {
 
   }
 
-  handleButtonClick = (e: any): void => {
-    console.log(e.target.name);
+  handleButtonClick = async (color: string) => {
+    this.setState((prevState) => ({
+      playerSequence: [...prevState.playerSequence, color]
+    }), this.checkGameStatus);
+  }
+
+  checkGameStatus = async () => {
+    if (this.state.playerSequence.length === this.state.sequence.length) {  // meaning the player has touched equal colors
+      if (deepEqual(this.state.playerSequence, this.state.sequence)) {  // checking if the player has won
+        // TODO: Add Color
+        this.setState((prevState) => ({
+          sequence: [...prevState.sequence, 'blue'],
+          playerSequence: [],
+        }))
+        // Run the sequence again
+        console.log('correct Sequence');
+        this.runSequence();
+      } else {  // TODO: the player has lost
+        console.log('incorrect sequence');
+        this.setState(() => ({playerSequence: []}))
+        this.runSequence();
+      }
+    }
+  }
+
+  runSequence = async () => {
+    await timeout(500);
+    this.state.sequence.forEach(async (color, i, arr) => {
+      if (i === 0) {
+        this.setState(() => ({activeButton: color}))
+      } else if (i === arr.length - 1 ) {
+        await timeout(i * 1000);
+        this.setState(() => ({activeButton: color}), async () => {
+          await timeout(1000);
+          this.setState(() => ({activeButton: ''}));
+        });
+      } else {
+        await timeout(i * 1000);
+        this.setState(() => ({activeButton: color})); 
+      }
+    });
+  }
+
+  changeGameState = () => {
+    if (this.state.gameState === GameState.Off) {
+      this.setState(() => ({gameState: GameState.Play}));
+      this.startGame();
+    } else {
+      this.setState(() => ({gameState: GameState.Off}));
+    }
+  }
+
+  startGame = async () => {
+    this.runSequence();
   }
 
   render() {
     return (
       <div className="App">
         <div className="container">
-          <Button handleClick={this.handleButtonClick} color="green"/>
-          <Button handleClick={this.handleButtonClick} color="red"/>
-          <Button handleClick={this.handleButtonClick} color="blue"/>
-          <Button handleClick={this.handleButtonClick} color="yellow"/>
-          <div className="center"></div>
+          <Button handleClick={this.handleButtonClick} color="green" activeButton={this.state.activeButton} gameState={this.state.gameState}/>
+          <Button handleClick={this.handleButtonClick} color="red" activeButton={this.state.activeButton} gameState={this.state.gameState}/>
+          <Button handleClick={this.handleButtonClick} color="blue" activeButton={this.state.activeButton} gameState={this.state.gameState}/>
+          <Button handleClick={this.handleButtonClick} color="yellow" activeButton={this.state.activeButton} gameState={this.state.gameState}/>
+          <div className="center">
+            <button onClick={() => this.runSequence()}>Click Me!</button>
+            <button onClick={this.changeGameState}>{this.state.gameState === 1 ? 'Off' : 'On'}</button>
+          </div>
         </div>        
       </div>
     );

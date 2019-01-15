@@ -12,32 +12,49 @@
   &--green {
     border-top-left-radius: 100%;
     background-color: $color-green;
+    color: $color-green;
     border-left: none;
     border-top: none;
+
+    &:active, &.active {
+      background-color: lighten($color-green, 15%)
+    }
   }
 
   &--red {
     border-top-right-radius: 100%;
     background-color: $color-red;
+    color: $color-red;
     border-right: none;
     border-top: none;
+    
+    &:active, &.active {
+      background-color: lighten($color-red, 15%)
+    }
   }
 
   &--blue {
     border-bottom-left-radius: 100%;
     background-color: $color-blue;
+    color: $color-blue;
     border-left: none;
     border-bottom: none;
+    
+    &:active, &.active {
+      background-color: lighten($color-blue, 15%)
+    }
   }
 
   &--yellow {
     border-bottom-right-radius: 100%;
     background-color: $color-yellow;
+    color: $color-yellow;
     border-right: none;
     border-bottom: none;
-  }
-}
 
-// .lighter {
-//   background-color: lighten(currentColor, 15%)
-// }
+    &:active, &.active {
+      background-color: lighten($color-yellow, 15%)
+    }
+  }
+
+}
