@@ -17,7 +17,7 @@ interface AppState {
 class App extends React.Component<{}, AppState> {
 
   state: AppState = {
-    sequence: ['green', 'red'],
+    sequence: ['blue', 'red', 'green', 'yellow'],
     activeButton: '',
     gameState: GameState.Off,
     playerSequence: []
@@ -54,20 +54,45 @@ class App extends React.Component<{}, AppState> {
 
   runSequence = async () => {
     await timeout(500);
-    this.state.sequence.forEach(async (color, i, arr) => {
-      if (i === 0) {
-        this.setState(() => ({activeButton: color}))
-      } else if (i === arr.length - 1 ) {
-        await timeout(i * 1000);
-        this.setState(() => ({activeButton: color}), async () => {
-          await timeout(1000);
-          this.setState(() => ({activeButton: ''}));
-        });
-      } else {
-        await timeout(i * 1000);
-        this.setState(() => ({activeButton: color})); 
-      }
+    this.state.sequence.forEach(async (color, i) => {
+      // if (i === 0) {
+      //   this.pushButton(color);
+      // } else if (i === arr.length - 1 ) {
+      //   // await timeout(i * 1000);
+      //   // this.setState(() => ({activeButton: color}), async () => {
+      //   //   await timeout(1000);
+      //   //   this.setState(() => ({activeButton: ''}));
+      //   // });
+      //   this.pushButton(color, i);
+      // } else {
+      //   // await timeout(i * 1000);
+      //   // this.setState(() => ({activeButton: color})); 
+      //   this.pushButton(color, i);
+      // }
+      
+      await this.pushButton(color, i);  
     });
+  }
+
+  activateButton = (color: string) : void => {
+    this.setState(() => ({activeButton: color}));
+  }
+
+  pause = () => {
+    this.setState(() => ({activeButton: ''}));
+  }
+
+  pushButton = async (color, i = 1) => {
+    await timeout(i * 1000);
+    this.setState(() => ({activeButton: color}), async () => {
+      this.setState(() => ({ activeButton: ''}));
+      await timeout(i * 1000)
+    })
+    // console.log('button pushed');
+    // this.activateButton(color);
+    // await timeout(i * 1000);
+    // this.pause();
+    // console.log('button disabled')
   }
 
   changeGameState = () => {
