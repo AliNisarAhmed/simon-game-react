@@ -18,9 +18,9 @@ interface ButtonProps {
 }
 
 class Button extends React.Component<ButtonProps> {
-  audio: any
-  componentDidMount() {
-    this.audio;
+
+  onButtonClick = () => {
+    this.props.handleClick(this.props.color);
   }
 
   render () {
@@ -30,11 +30,10 @@ class Button extends React.Component<ButtonProps> {
       <React.Fragment>
         <button
           disabled={(gameState === GameState.Off)}
-          onClick={() => (handleClick(color), this.audio.play())}
+          onClick={this.onButtonClick}
           className={`btn btn--${color} ${activeButton === color ? 'active': ''}`}
           name={color}
         ></button>
-        <audio src={audioSource} ref={el => this.audio = el}></audio>
       </React.Fragment>
     );
   }

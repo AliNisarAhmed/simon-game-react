@@ -1,6 +1,7 @@
 import React from 'react';
 
 import Button from './Button';
+import AudioComponent from './AudioComponent';
 
 import timeout from '../helperFunctions/promisedTimeOut';
 
@@ -12,15 +13,17 @@ interface AppState {
   activeButton: string;
   gameState: GameState
   playerSequence: string[];
+  audioToPlay: string,
 }
 
 class App extends React.Component<{}, AppState> {
 
   state: AppState = {
-    sequence: ['blue', 'red', 'green', 'yellow'],
+    sequence: ['blue', 'red', 'green', 'yellow', 'yellow'],
     activeButton: '',
     gameState: GameState.Off,
-    playerSequence: []
+    playerSequence: [],
+    audioToPlay: '',
   }
 
   componentDidMount () {
@@ -28,6 +31,7 @@ class App extends React.Component<{}, AppState> {
   }
 
   handleButtonClick = async (color: string) => {
+    this.playAudio(color);
     this.setState((prevState) => ({
       playerSequence: [...prevState.playerSequence, color]
     }), this.checkGameStatus);
@@ -43,62 +47,46 @@ class App extends React.Component<{}, AppState> {
         }))
         // Run the sequence again
         console.log('correct Sequence');
-        this.runSequence();
+        // this.runSequence();
       } else {  // TODO: the player has lost
         console.log('incorrect sequence');
         this.setState(() => ({playerSequence: []}))
-        this.runSequence();
+        // this.runSequence();
       }
     }
   }
 
   runSequence = async () => {
     await timeout(500);
-    this.state.sequence.forEach(async (color, i) => {
-      // if (i === 0) {
-      //   this.pushButton(color);
-      // } else if (i === arr.length - 1 ) {
-      //   // await timeout(i * 1000);
-      //   // this.setState(() => ({activeButton: color}), async () => {
-      //   //   await timeout(1000);
-      //   //   this.setState(() => ({activeButton: ''}));
-      //   // });
-      //   this.pushButton(color, i);
-      // } else {
-      //   // await timeout(i * 1000);
-      //   // this.setState(() => ({activeButton: color})); 
-      //   this.pushButton(color, i);
-      // }
-      
-      await this.pushButton(color, i);  
-    });
-  }
-
-  activateButton = (color: string) : void => {
-    this.setState(() => ({activeButton: color}));
+    for (let i = 0; i < this.state.sequence.length; i++) {
+      await timeout(1000);
+      console.log('activating button');
+      this.pushButton(this.state.sequence[i]);
+      this.playAudio(this.state.sequence[i]);
+      await timeout(1000);
+      console.log('deactivating button');
+      this.pause();
+    }
   }
 
   pause = () => {
     this.setState(() => ({activeButton: ''}));
   }
 
-  pushButton = async (color, i = 1) => {
-    await timeout(i * 1000);
-    this.setState(() => ({activeButton: color}), async () => {
-      this.setState(() => ({ activeButton: ''}));
-      await timeout(i * 1000)
-    })
-    // console.log('button pushed');
-    // this.activateButton(color);
-    // await timeout(i * 1000);
-    // this.pause();
-    // console.log('button disabled')
+  pushButton = (color) => {
+    this.setState(() => ({activeButton: color}))
+  }
+
+  playAudio = (color) => {
+    this.setState(() => ({audioToPlay: color}), () => {
+      this.setState(() => ({audioToPlay: ''}));
+    });
   }
 
   changeGameState = () => {
     if (this.state.gameState === GameState.Off) {
       this.setState(() => ({gameState: GameState.Play}));
-      this.startGame();
+      // this.startGame();
     } else {
       this.setState(() => ({gameState: GameState.Off}));
     }
@@ -120,6 +108,7 @@ class App extends React.Component<{}, AppState> {
             <button onClick={() => this.runSequence()}>Click Me!</button>
             <button onClick={this.changeGameState}>{this.state.gameState === 1 ? 'Off' : 'On'}</button>
           </div>
+          <AudioComponent audioToPlay={this.state.audioToPlay}></AudioComponent>
         </div>        
       </div>
     );
