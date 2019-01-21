@@ -2,6 +2,7 @@ import React from 'react';
 
 import Button from './Button';
 import AudioComponent from './AudioComponent';
+import Center from './Center';
 
 import timeout from '../helperFunctions/promisedTimeOut';
 
@@ -14,6 +15,7 @@ interface AppState {
   gameState: GameState
   playerSequence: string[];
   audioToPlay: string,
+  count: number;
 }
 
 class App extends React.Component<{}, AppState> {
@@ -24,6 +26,7 @@ class App extends React.Component<{}, AppState> {
     gameState: GameState.Off,
     playerSequence: [],
     audioToPlay: '',
+    count: 0,
   }
 
   componentDidMount () {
@@ -67,7 +70,16 @@ class App extends React.Component<{}, AppState> {
       console.log('deactivating button');
       this.pause();
     }
+    this.incrementCount()
   }
+
+  incrementCount = () => {
+    this.setState((prevState) => ({ count: prevState.count + 1}))
+  }
+
+  // decrementCount = () => {
+  //   this.setState((prevState) => ({ count: prevState.count - 1}))
+  // }
 
   pause = () => {
     this.setState(() => ({activeButton: ''}));
@@ -104,10 +116,12 @@ class App extends React.Component<{}, AppState> {
           <Button handleClick={this.handleButtonClick} color="red" activeButton={this.state.activeButton} gameState={this.state.gameState}/>
           <Button handleClick={this.handleButtonClick} color="blue" activeButton={this.state.activeButton} gameState={this.state.gameState}/>
           <Button handleClick={this.handleButtonClick} color="yellow" activeButton={this.state.activeButton} gameState={this.state.gameState}/>
-          <div className="center">
-            <button onClick={() => this.runSequence()}>Click Me!</button>
-            <button onClick={this.changeGameState}>{this.state.gameState === 1 ? 'Off' : 'On'}</button>
-          </div>
+          <Center 
+            runSequence={this.runSequence} 
+            changeGameState={this.changeGameState} 
+            gameState={this.state.gameState} 
+            count={this.state.count}
+          />
           <AudioComponent audioToPlay={this.state.audioToPlay}></AudioComponent>
         </div>        
       </div>

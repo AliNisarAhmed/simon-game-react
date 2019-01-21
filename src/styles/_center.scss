@@ -9,4 +9,105 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+
+  justify-items: center;
+
+  &__heading {
+    font-size: 5rem;
+    font-weight: bold;
+    margin: 2rem 0 0 0;
+  }
+
+  .controls {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+
+    &__screen {
+      width: 5rem;
+      height: 4rem;
+      background-color: rgb(54, 7, 7);
+      border: 3px solid black;
+      border-radius: .5rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      span {
+        color: red;
+        font-size: 2rem;
+      }
+    }
+
+    &__start {
+      display: flex;
+      flex-flow: column;
+    }
+    
+    &__btn {
+      width: 2.2rem;
+      height: 2.2rem;
+      background-color: red;
+      border-radius: 100%;
+      margin-bottom: .3rem;
+      cursor: pointer;
+      outline: none;
+      border: 3px solid $color-gray;
+      box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.69);
+
+      &:active {
+        transform: translateY(1px);
+        box-shadow: 0px 1px 1px 0px rgba(0,0,0,0.69);        
+      }
+    }
+
+    &__label {
+      font-size: 1.2rem;
+    }
+
+  }
+
+  .onOff {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+
+    &__label {
+      font-size: 1.2rem;
+    }
+
+    &__box {
+      width: 4rem;
+      height: 2rem;
+      background-color: $color-gray;
+      border-radius: 2px;
+      display: flex;
+      flex-flow: column;
+      justify-content: center;
+      cursor: pointer;
+      padding-left: .2rem;
+      padding-right: .2rem;
+      margin: 0 1rem;
+    }
+
+    &__slider {
+      height: 1.7rem;
+      width: 1.9rem;
+      border-radius: 1px;
+      background-color: lighten($color: $color-blue, $amount: 20%);
+
+      &.left {
+        align-self: flex-start;
+      }
+
+      &.right {
+        align-self: flex-end;
+      }
+    }
+  }
 }
