@@ -1,7 +1,7 @@
 .center {
   width: 60%;
   height: 60%;
-  background-color: white;
+  background-color: $color-white;
   border: 10px solid $color-gray;
   border-radius: 50%;
 
@@ -31,7 +31,7 @@
     &__screen {
       width: 5rem;
       height: 4rem;
-      background-color: rgb(54, 7, 7);
+      background-color: $color-dark-red;
       border: 3px solid black;
       border-radius: .5rem;
       display: flex;
@@ -58,7 +58,7 @@
       cursor: pointer;
       outline: none;
       border: 3px solid $color-gray;
-      box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.69);
+      box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.69);
 
       &:active {
         transform: translateY(1px);

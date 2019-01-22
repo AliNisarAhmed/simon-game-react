@@ -8,6 +8,12 @@ html {
 }
 
 body {
+  width: 100vw;
+  height: 100vh;
   margin: 0;
   padding: 0;
+  padding-top: 5rem;
+  background-image: url('../assets/RedPolygons_1400x900.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
 }

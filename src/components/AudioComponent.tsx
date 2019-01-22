@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react'
-import audioSources from '../audioSources/audioSources';
+import audioSources from '../assets/audioSources/audioSources';
 
 interface AudioProps {
   audioToPlay: string;

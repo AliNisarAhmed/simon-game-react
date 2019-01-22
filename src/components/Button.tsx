@@ -1,20 +1,13 @@
 import React from 'react'
 
-import { GameState } from '../enums/gameState';
+import { Power } from '../enums/Power';
 
-
-const audioSources = {
-  red: "https://s3.amazonaws.com/freecodecamp/simonSound1.mp3",
-  green: "https://s3.amazonaws.com/freecodecamp/simonSound2.mp3",
-  blue: "https://s3.amazonaws.com/freecodecamp/simonSound3.mp3",
-  yellow: "https://s3.amazonaws.com/freecodecamp/simonSound4.mp3"
-}
 
 interface ButtonProps {
   handleClick: any;
   color: string;
   activeButton: string,
-  gameState: GameState;
+  power: Power;
 }
 
 class Button extends React.Component<ButtonProps> {
@@ -24,12 +17,11 @@ class Button extends React.Component<ButtonProps> {
   }
 
   render () {
-    const { handleClick, color, activeButton, gameState } = this.props;
-    const audioSource = audioSources[color];
+    const { handleClick, color, activeButton, power } = this.props;
     return (
       <React.Fragment>
         <button
-          disabled={(gameState === GameState.Off)}
+          disabled={(power === Power.Off)}
           onClick={this.onButtonClick}
           className={`btn btn--${color} ${activeButton === color ? 'active': ''}`}
           name={color}
