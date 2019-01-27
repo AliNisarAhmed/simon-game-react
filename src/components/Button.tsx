@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { Power } from '../enums/Power';
+import { GameState } from '../enums/gameState';
 
 
 interface ButtonProps {
@@ -8,6 +9,8 @@ interface ButtonProps {
   color: string;
   activeButton: string,
   power: Power;
+  gameState: GameState;
+  flashAll: boolean;
 }
 
 class Button extends React.Component<ButtonProps> {
@@ -17,13 +20,13 @@ class Button extends React.Component<ButtonProps> {
   }
 
   render () {
-    const { handleClick, color, activeButton, power } = this.props;
+    const { handleClick, color, activeButton, power, gameState, flashAll } = this.props;
     return (
       <React.Fragment>
         <button
-          disabled={(power === Power.Off)}
+          disabled={( power === Power.Off || gameState !== GameState.AwaitingUserInput )}
           onClick={this.onButtonClick}
-          className={`btn btn--${color} ${activeButton === color ? 'active': ''}`}
+          className={`btn btn--${color} ${activeButton === color || flashAll ? 'active': ''}`}
           name={color}
         ></button>
       </React.Fragment>

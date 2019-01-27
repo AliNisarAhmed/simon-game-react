@@ -1,5 +1,8 @@
 export enum GameState {
   Off,
-  PlayingAudio,
+  AwaitingGameStart,
+  PlayingSequence,
   AwaitingUserInput
 }
+
+// export type GameState = "Off" | "AwaitingGameStart" | "PlayingSequence" | "AwaitingUserInput";

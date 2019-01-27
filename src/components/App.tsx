@@ -8,7 +8,7 @@ import timeout from '../helperFunctions/promisedTimeOut';
 
 import { GameState } from '../enums/gameState';
 import { Power } from '../enums/Power';
-import deepEqual from '../helperFunctions/deepEqual';
+import isSubsetArr from '../helperFunctions/isSubsetArr';
 import pickRandomColor from '../helperFunctions/pickRandomColor';
 
 interface AppState {
@@ -19,22 +19,47 @@ interface AppState {
   playerSequence: string[];
   audioToPlay: string,
   count: number;
+  flashAll: boolean;
+}
+
+const initialState = {
+  sequence: [],
+  activeButton: '',
+  power: Power.Off,
+  gameState: GameState.Off, 
+  playerSequence: [],
+  audioToPlay: '',
+  count: 0,
+  flashAll: false,
 }
 
 class App extends React.Component<{}, AppState> {
 
-  state: AppState = {
-    sequence: [],
-    activeButton: '',
-    power: Power.Off,
-    gameState: GameState.Off,
-    playerSequence: [],
-    audioToPlay: '',
-    count: 0,
-  }
+  state: AppState = initialState;
 
   componentDidMount () {
 
+  }
+
+  render() {
+    return (
+      <div className="App">
+        <div className="container">
+          <Button handleClick={this.handleButtonClick} color="green" activeButton={this.state.activeButton} power={this.state.power} gameState={this.state.gameState} flashAll={this.state.flashAll}/>
+          <Button handleClick={this.handleButtonClick} color="red" activeButton={this.state.activeButton} power={this.state.power} gameState={this.state.gameState} flashAll={this.state.flashAll}/>
+          <Button handleClick={this.handleButtonClick} color="blue" activeButton={this.state.activeButton} power={this.state.power} gameState={this.state.gameState} flashAll={this.state.flashAll}/>
+          <Button handleClick={this.handleButtonClick} color="yellow" activeButton={this.state.activeButton} power={this.state.power} gameState={this.state.gameState} flashAll={this.state.flashAll}/>
+          <Center 
+            startGame={this.startGame} 
+            changePower={this.changePower} 
+            power={this.state.power} 
+            count={this.state.count}
+            gameState={this.state.gameState}
+          />
+          <AudioComponent audioToPlay={this.state.audioToPlay}></AudioComponent>
+        </div>        
+      </div>
+    );
   }
 
   handleButtonClick = async (color: string) => {  // Handles user's click on a particular color
@@ -45,36 +70,55 @@ class App extends React.Component<{}, AppState> {
   }
 
   checkGameStatus = async () => {  // check whether the user's sequence (playerSequence) matches with the main sequence.
-    if (this.state.playerSequence.length === this.state.sequence.length) {  // meaning the player has touched equal colors
-      if (deepEqual(this.state.playerSequence, this.state.sequence)) {  // checking if the player has won
-        // TODO: Add Color
-        this.setState((prevState) => ({
-          sequence: [...prevState.sequence, 'blue'],
-          playerSequence: [],
-        }))
-        // Run the sequence again
-        console.log('correct Sequence');
-        // this.runSequence();
-      } else {  // TODO: the player has lost
-        console.log('incorrect sequence');
-        this.setState(() => ({playerSequence: []}))
-        // this.runSequence();
+    if (!isSubsetArr(this.state.playerSequence, this.state.sequence)) {
+      // The player has not guessed correctly
+      this.flash();
+      this.resetPlayerSequence();
+      this.runSequence();
+    } else {  // the player has guessed correctly so far
+      // player has guesseed correctly, we must now check if he has guessed the whole sequence
+      if (this.state.playerSequence.length === this.state.sequence.length) {
+        // the player has guessed the whole sequence correctly, we must add one color to the sequence and rest playerSequence.
+        this.addColorToSequence();
+        this.resetPlayerSequence();
+        this.incrementCount();
+        this.runSequence();
       }
+      // the player has guessed correctly, but he has not guessed the whole sequence yet, the game continues.
     }
   }
 
+  resetPlayerSequence = () => {
+    this.setState({ playerSequence: [] });
+  }
+
+  flash = async () => {
+    this.setState({ flashAll: true});
+    await timeout(100);
+    this.setState({flashAll : false});
+    await timeout(100);
+    this.setState({flashAll: true});
+    await timeout(100);
+    this.setState({flashAll: false});
+  }
+
   runSequence = async () => {
-    this.incrementCount();
+    this.setState({ gameState: GameState.PlayingSequence});    
     await timeout(500);
     for (let i = 0; i < this.state.sequence.length; i++) {
-      await timeout(1000);
-      console.log('activating button');
-      this.pushButton(this.state.sequence[i]);
-      this.playAudio(this.state.sequence[i]);
-      await timeout(1000);
-      console.log('deactivating button');
-      this.pause();
+      if (this.state.power !== Power.Off && this.state.gameState === GameState.PlayingSequence) {
+        await timeout(800);
+        console.log('activating button');
+        this.pushButton(this.state.sequence[i]);
+        this.playAudio(this.state.sequence[i]);
+        await timeout(800);
+        console.log('deactivating button');
+        this.pause();
+      } else {
+        break;
+      }
     }
+    this.setState({ gameState: GameState.AwaitingUserInput });
   }
 
   incrementCount = () => {
@@ -101,9 +145,10 @@ class App extends React.Component<{}, AppState> {
 
   changePower = () => {
     if (this.state.power === Power.Off) {
-      this.setState(() => ({power: Power.On}));
+      this.setState(() => ({power: Power.On, gameState: GameState.AwaitingGameStart}));
     } else {
       this.setState(() => ({power: Power.Off}));
+      this.resetGame();
     }
   }
 
@@ -112,29 +157,16 @@ class App extends React.Component<{}, AppState> {
   }
 
   startGame = async () => {
+    this.flash();
     this.addColorToSequence();
+    this.incrementCount();    
     this.runSequence();
   }
 
-  render() {
-    return (
-      <div className="App">
-        <div className="container">
-          <Button handleClick={this.handleButtonClick} color="green" activeButton={this.state.activeButton} power={this.state.power}/>
-          <Button handleClick={this.handleButtonClick} color="red" activeButton={this.state.activeButton} power={this.state.power}/>
-          <Button handleClick={this.handleButtonClick} color="blue" activeButton={this.state.activeButton} power={this.state.power}/>
-          <Button handleClick={this.handleButtonClick} color="yellow" activeButton={this.state.activeButton} power={this.state.power}/>
-          <Center 
-            startGame={this.startGame} 
-            changePower={this.changePower} 
-            power={this.state.power} 
-            count={this.state.count}
-          />
-          <AudioComponent audioToPlay={this.state.audioToPlay}></AudioComponent>
-        </div>        
-      </div>
-    );
+  resetGame = () => {
+    this.setState(initialState);
   }
+
 }
 
 export default App;
