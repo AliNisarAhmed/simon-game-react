@@ -2,21 +2,19 @@ import React from 'react'
 import classNames from 'classnames';
 import formatCount from '../helperFunctions/formatCount';
 
-import { GameState } from '../enums/gameState';
-
 
 export default function Center({ startGame, changePower, power, count, gameState }) {
   
   function handleStartGame () {
-    if (power && gameState === GameState.AwaitingGameStart) {
+    if (power && gameState === "AwaitingGameStart") {
       startGame();
     }
   }
 
   const sliderClass = classNames({
     onOff__slider: true,
-    left: power !== 1,
-    right: power === 1
+    left: power !== "Off",
+    right: power === "On"
   })
 
   return (
@@ -26,7 +24,7 @@ export default function Center({ startGame, changePower, power, count, gameState
         <div className="controls__screen">
           <span>
             {
-              power === 0 ? "" : (
+              power === "Off" ? "" : (
                 count === 0 ? "- -" : formatCount(count)
               )
             }

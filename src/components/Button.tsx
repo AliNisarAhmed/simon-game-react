@@ -24,7 +24,7 @@ class Button extends React.Component<ButtonProps> {
     return (
       <React.Fragment>
         <button
-          disabled={( power === Power.Off || gameState !== GameState.AwaitingUserInput )}
+          disabled={( power === "Off" || gameState !== "AwaitingUserInput" )}
           onClick={this.onButtonClick}
           className={`btn btn--${color} ${activeButton === color || flashAll ? 'active': ''}`}
           name={color}

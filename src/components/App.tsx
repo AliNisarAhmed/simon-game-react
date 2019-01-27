@@ -11,31 +11,33 @@ import { Power } from '../enums/Power';
 import isSubsetArr from '../helperFunctions/isSubsetArr';
 import pickRandomColor from '../helperFunctions/pickRandomColor';
 
+import { Colors } from '../enums/Colors';
+
 interface AppState {
-  sequence: string[];
+  sequence: Colors[];
   activeButton: string;
   power: Power;
   gameState: GameState;
-  playerSequence: string[];
+  playerSequence: Colors[];
   audioToPlay: string,
   count: number;
   flashAll: boolean;
 }
 
-const initialState = {
-  sequence: [],
-  activeButton: '',
-  power: Power.Off,
-  gameState: GameState.Off, 
-  playerSequence: [],
-  audioToPlay: '',
-  count: 0,
-  flashAll: false,
-}
+// const initialState = 
 
 class App extends React.Component<{}, AppState> {
 
-  state: AppState = initialState;
+  state: AppState = {
+    sequence: [],
+    activeButton: '',
+    power: "Off",
+    gameState: "Off", 
+    playerSequence: [],
+    audioToPlay: '',
+    count: 0,
+    flashAll: false,
+  };
 
   componentDidMount () {
 
@@ -62,7 +64,7 @@ class App extends React.Component<{}, AppState> {
     );
   }
 
-  handleButtonClick = async (color: string) => {  // Handles user's click on a particular color
+  handleButtonClick = async (color: Colors) => {  // Handles user's click on a particular color
     this.playAudio(color);  // plays Audio associated with a particular color
     this.setState((prevState) => ({
       playerSequence: [...prevState.playerSequence, color]
@@ -103,10 +105,10 @@ class App extends React.Component<{}, AppState> {
   }
 
   runSequence = async () => {
-    this.setState({ gameState: GameState.PlayingSequence});    
+    this.setState({ gameState: "PlayingSequence"});    
     await timeout(500);
     for (let i = 0; i < this.state.sequence.length; i++) {
-      if (this.state.power !== Power.Off && this.state.gameState === GameState.PlayingSequence) {
+      if (this.state.power !== "Off" && this.state.gameState === "PlayingSequence" ) {
         await timeout(800);
         console.log('activating button');
         this.pushButton(this.state.sequence[i]);
@@ -118,7 +120,7 @@ class App extends React.Component<{}, AppState> {
         break;
       }
     }
-    this.setState({ gameState: GameState.AwaitingUserInput });
+    this.setState({ gameState: "AwaitingUserInput" });
   }
 
   incrementCount = () => {
@@ -144,10 +146,10 @@ class App extends React.Component<{}, AppState> {
   }
 
   changePower = () => {
-    if (this.state.power === Power.Off) {
-      this.setState(() => ({power: Power.On, gameState: GameState.AwaitingGameStart}));
+    if (this.state.power === "Off") {
+      this.setState(() => ({power: "On", gameState: "AwaitingGameStart" }));
     } else {
-      this.setState(() => ({power: Power.Off}));
+      this.setState(() => ({power: "Off" }));
       this.resetGame();
     }
   }
@@ -164,7 +166,16 @@ class App extends React.Component<{}, AppState> {
   }
 
   resetGame = () => {
-    this.setState(initialState);
+    this.setState({
+      sequence: [],
+      activeButton: '',
+      power: "Off",
+      gameState: "Off", 
+      playerSequence: [],
+      audioToPlay: '',
+      count: 0,
+      flashAll: false,
+    });
   }
 
 }
