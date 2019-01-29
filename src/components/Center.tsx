@@ -2,21 +2,30 @@ import React from 'react'
 import classNames from 'classnames';
 import formatCount from '../helperFunctions/formatCount';
 
-import { GameState } from '../enums/gameState';
 
-
-export default function Center({ startGame, changePower, power, count, gameState }) {
+export default function Center({ startGame, changePower, power, count, gameState, toggleStrict, strict }) {
   
   function handleStartGame () {
-    if (power && gameState === GameState.AwaitingGameStart) {
+    if (power && gameState === "AwaitingGameStart") {
       startGame();
+    }
+  }
+
+  function handleToggleStrict () {
+    if (power && gameState === "AwaitingGameStart") {
+      toggleStrict();
     }
   }
 
   const sliderClass = classNames({
     onOff__slider: true,
-    left: power !== 1,
-    right: power === 1
+    left: power !== "Off",
+    right: power === "On"
+  });
+
+  const indicatorClass = classNames({
+    controls__indicator: true,
+    on: strict,
   })
 
   return (
@@ -26,15 +35,18 @@ export default function Center({ startGame, changePower, power, count, gameState
         <div className="controls__screen">
           <span>
             {
-              power === 0 ? "" : (
-                count === 0 ? "- -" : formatCount(count)
+              power === "Off" ? "" : (
+                formatCount(count, gameState)
               )
             }
           </span>
         </div>
         <div className="controls__start">
-          <button onClick={handleStartGame}  className="controls__btn"></button>
+          <div className={indicatorClass}></div>
+          <button onClick={handleStartGame} className="controls__btn"></button>
+          <button onClick={handleToggleStrict} className="controls__btn controls__btn--strict"></button>
           <span className="controls__label">Start</span>
+          <span className="controls__label controls__label--strict">Strict</span>
         </div>
       </div>
       <div className="onOff">

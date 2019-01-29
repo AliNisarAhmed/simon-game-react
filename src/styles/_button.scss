@@ -16,7 +16,7 @@
     border-left: none;
     border-top: none;
 
-    &:active, &.active {
+    &:active:not(:disabled), &.active {
       background-color: lighten($color-green, 15%)
     }
   }
@@ -28,7 +28,7 @@
     border-right: none;
     border-top: none;
     
-    &:active, &.active {
+    &:active:not(:disabled), &.active {
       background-color: lighten($color-red, 15%)
     }
   }
@@ -40,7 +40,7 @@
     border-left: none;
     border-bottom: none;
     
-    &:active, &.active {
+    &:active:not(:disabled), &.active {
       background-color: lighten($color-blue, 15%)
     }
   }
@@ -52,7 +52,7 @@
     border-right: none;
     border-bottom: none;
 
-    &:active, &.active {
+    &:active:not(:disabled), &.active {   // ???? :active:not(:disabled) is needed for Firefox, else the button can still be :active despote being desabled????
       background-color: lighten($color-yellow, 15%)
     }
   }
