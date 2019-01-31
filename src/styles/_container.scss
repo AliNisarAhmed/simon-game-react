@@ -1,9 +1,15 @@
 
 .container {
-  width: 400px;
-  height: 400px;
+  width: 40rem;
+  height: 40rem;
+
+  @media only screen and (max-width: 400px) {
+    width: 100vw;
+    height: 100vw;
+  }
+
   border-radius: 50%;
-  border: 30px solid $color-gray;
+  border: 3rem solid $color-gray;
 
   margin: 0 auto;
 
@@ -14,5 +20,6 @@
 
   position: relative;
 
-  box-shadow: 0 0 20px 3px $color-white;
+  box-shadow: 0 0 2rem 3px $color-white;
+
 }

@@ -13,7 +13,6 @@ export default class AudioComponent extends PureComponent<AudioProps>{  // using
   }
 
   componentDidUpdate() {
-    console.log('audio component updated');
     if (this.props.audioToPlay) {
       this.sounds[this.props.audioToPlay].play();
     }
