@@ -16,18 +16,24 @@ import pickRandomColor from '../helperFunctions/pickRandomColor';
 import { Colors } from '../enums/Colors';
 
 interface AppState {
-  sequence: Colors[];
-  activeButton: string;
-  power: Power;
-  gameState: GameState;
-  playerSequence: Colors[];
-  audioToPlay: string,
-  count: number;
-  flashAll: boolean;
-  strict: Strict;
+  sequence: Colors[];   // the main color sequence to be guessed by the player
+  activeButton: string;  // the current button that is active and being played from the sequence.
+  power: Power;       //'On' or 'Off'
+  gameState: GameState;   // controls the state of the game after user has turned on the power
+  playerSequence: Colors[];   // contains the colors clicked by the user
+  audioToPlay: string,    // name of color, to be passed to audio component to play the appropriate audio
+  count: number;   // number of colors in the sequence
+  flashAll: boolean;   // if flashAll is true, all colors will flash at once.
+  strict: Strict;  // boolean, strict mode on == true else false
+  highestNormalScore: number;   // highest score by the player on non=strict mode
+  highestStrictScore: number;   // highest score on strict mode.
 }
 
-// const initialState = 
+const quickFlash = 100;
+const winningFlash = 500;
+const sequenceDelay = 800;
+const mediumTimeout = 500;
+const winningCondition = 20;
 
 class App extends React.Component<{}, AppState> {
 
@@ -38,14 +44,27 @@ class App extends React.Component<{}, AppState> {
     gameState: "Off", 
     playerSequence: [],
     audioToPlay: '',
-    count: 0,
+    count: 0,  
     flashAll: false,
     strict: false,
+    highestNormalScore: 0,
+    highestStrictScore: 0,
   };
+
+  componentDidMount () {
+    let hns = localStorage.getItem('highestNormalScore');
+    let hss = localStorage.getItem('highestStrictScore');
+    if (hns) this.setState({highestNormalScore: Number(hns)});
+    if (hss) this.setState({highestStrictScore: Number(hss)});
+  }
 
   render() {
     return (
       <div className="App">
+        <div className="score">
+          <p>Your High Score - Normal mode: <span>{this.state.highestNormalScore}</span></p>
+          <p>Your High score - Strict mode: <span>{this.state.highestStrictScore}</span></p>
+        </div>
         <div className="container">
           <Button handleClick={this.handleButtonClick} color="green" activeButton={this.state.activeButton} power={this.state.power} gameState={this.state.gameState} flashAll={this.state.flashAll}/>
           <Button handleClick={this.handleButtonClick} color="red" activeButton={this.state.activeButton} power={this.state.power} gameState={this.state.gameState} flashAll={this.state.flashAll}/>
@@ -77,33 +96,56 @@ class App extends React.Component<{}, AppState> {
     }), this.checkGameStatus);
   }
 
+  updateLocalStorage = () => {
+    if (this.state.strict) {
+      localStorage.setItem('highestStrictScore', String(this.state.highestStrictScore));
+      return;
+    } else {
+      localStorage.setItem('highestNormalScore', String(this.state.highestNormalScore));
+    }
+  }
+
+  updateScore = () => {
+    if (this.state.strict) {
+      if (this.state.highestStrictScore < this.state.count) {
+        this.setState(() => ({ highestStrictScore: this.state.count} ), this.updateLocalStorage)
+      }
+    } else {
+      if (this.state.highestNormalScore < this.state.count) {
+        this.setState(() => ({ highestNormalScore: this.state.count }), this.updateLocalStorage);
+      }
+    }
+  }
+
   checkGameStatus = async () => {  // check whether the user's sequence (playerSequence) matches with the main sequence.
     if (!isSubsetArr(this.state.playerSequence, this.state.sequence)) {
       // The player has not guessed correctly
       if (this.state.strict) {
         // game is in strict mode
-        await this.flash(100);
-        await timeout(500);
+        await this.flash(quickFlash);
+        await timeout(mediumTimeout);
         this.resetGame();
-        return;
+      } else {
+        await this.flash(quickFlash);
+        this.resetPlayerSequence();
+        this.runSequence();
       }
-      await this.flash(120);
-      this.resetPlayerSequence();
-      this.runSequence();
+
     } else {  // the player has guessed correctly so far
       // player has guesseed correctly, we must now check if he has guessed the whole sequence
       if (this.state.playerSequence.length === this.state.sequence.length) {
         // the player has guessed the whole sequence correctly, we must add one color to the sequence and rest playerSequence.
-        if (this.state.sequence.length === 20) {
-          // TODO - Add winning condition
-          await this.flash(500, "Win");
+        if (this.state.sequence.length === winningCondition) { // if the sequence length is 20, player has won the game
+          this.updateScore();
+          await this.flash(winningFlash, "Win");
           this.resetGame();
           return;
         }
 
         this.addColorToSequence();
-        this.resetPlayerSequence();
         this.incrementCount();
+        this.resetPlayerSequence();
+        this.updateScore();
         this.runSequence();
       }
       // the player has guessed correctly, but he has not guessed the whole sequence yet, the game continues.
@@ -129,16 +171,14 @@ class App extends React.Component<{}, AppState> {
   }
 
   runSequence = async () => {
-    await timeout(600);
+    await timeout(mediumTimeout);
     this.setState({ gameState: "PlayingSequence"});    
     for (let i = 0; i < this.state.sequence.length; i++) {
       if (this.state.power !== "Off" && this.state.gameState === "PlayingSequence" ) {
-        await timeout(800);
-        console.log('activating button');
+        await timeout(sequenceDelay);
         this.pushButton(this.state.sequence[i]);
         this.playAudio(this.state.sequence[i]);
-        await timeout(800);
-        console.log('deactivating button');
+        await timeout(sequenceDelay);
         this.pause();
       } else {
         break;
@@ -178,9 +218,7 @@ class App extends React.Component<{}, AppState> {
   }
 
   startGame = async () => {
-    this.flash(100);
-    this.flash(100);
-    this.flash(100);
+    await this.flash(quickFlash);
     this.addColorToSequence();
     this.incrementCount();    
     this.runSequence();

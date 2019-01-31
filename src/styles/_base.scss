@@ -1,6 +1,14 @@
 html {
   box-sizing: border-box;
   font-size: 62.5%;
+
+  @media only screen and (max-width: 400px) {
+    font-size: 50%;
+  }
+
+  @media only screen and (max-width: 280px) {
+    font-size: 35%;
+  }
 }
 
 *, *::before, *::after {
@@ -12,8 +20,12 @@ body {
   height: 100vh;
   margin: 0;
   padding: 0;
-  padding-top: 5rem;
+  padding-top: 4rem;
   background-image: url('../assets/RedPolygons_1400x900.jpg');
   background-size: cover;
   background-repeat: no-repeat;
+
+  @media only screen and (max-width: 400px) {
+    padding-top: 16vh;
+  }
 }
