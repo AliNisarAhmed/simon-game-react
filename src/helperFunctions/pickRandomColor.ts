@@ -1,4 +1,4 @@
-import { Colors } from '../enums/Colors'; 
+import { Colors } from '../sumTypes/Colors'; 
 
 export default function pickRandomColor(): Colors {
   const colors = ["blue", "red", "green", "yellow"];

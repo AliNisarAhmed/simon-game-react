@@ -1,7 +1,7 @@
 import React from 'react'
 
-import { Power } from '../enums/Power';
-import { GameState } from '../enums/gameState';
+import { Power } from '../sumTypes/Power';
+import { GameState } from '../sumTypes/gameState';
 
 
 interface ButtonProps {
@@ -24,7 +24,7 @@ class Button extends React.Component<ButtonProps> {
     return (
       <React.Fragment>
         <button
-          disabled={( power === "Off" || gameState !== "AwaitingUserInput" )}
+          disabled={( power === "Off" || gameState === "Off" || gameState === "PlayingSequence")}
           onClick={this.onButtonClick}
           className={`btn btn--${color} ${activeButton === color || flashAll ? 'active': ''}`}
           name={color}

@@ -6,14 +6,14 @@ import Center from './Center';
 
 import timeout from '../helperFunctions/promisedTimeOut';
 
-import { GameState } from '../enums/gameState';
-import { Power } from '../enums/Power';
-import { Strict } from '../enums/strictMode';
+import { GameState } from '../sumTypes/gameState';
+import { Power } from '../sumTypes/Power';
+import { Strict } from '../sumTypes/strictMode';
 
 import isSubsetArr from '../helperFunctions/isSubsetArr';
 import pickRandomColor from '../helperFunctions/pickRandomColor';
 
-import { Colors } from '../enums/Colors';
+import { Colors } from '../sumTypes/Colors';
 
 interface AppState {
   sequence: Colors[];   // the main color sequence to be guessed by the player
@@ -34,6 +34,7 @@ const winningFlash = 500;
 const sequenceDelay = 800;
 const mediumTimeout = 500;
 const winningCondition = 20;
+const sequenceReplay = 5000;
 
 class App extends React.Component<{}, AppState> {
 
@@ -92,7 +93,8 @@ class App extends React.Component<{}, AppState> {
   handleButtonClick = async (color: Colors) => {  // Handles user's click on a particular color
     this.playAudio(color);  // plays Audio associated with a particular color
     this.setState((prevState) => ({
-      playerSequence: [...prevState.playerSequence, color]
+      playerSequence: [...prevState.playerSequence, color],
+      gameState: "PlayerTurnUnderway"
     }), this.checkGameStatus);
   }
 
@@ -174,17 +176,27 @@ class App extends React.Component<{}, AppState> {
     await timeout(mediumTimeout);
     this.setState({ gameState: "PlayingSequence"});    
     for (let i = 0; i < this.state.sequence.length; i++) {
-      if (this.state.power !== "Off" && this.state.gameState === "PlayingSequence" ) {
+      if (this.state.power !== "Off") {
         await timeout(sequenceDelay);
         this.pushButton(this.state.sequence[i]);
         this.playAudio(this.state.sequence[i]);
         await timeout(sequenceDelay);
         this.pause();
       } else {
-        break;
+        return;
       }
     }
-    this.setState({ gameState: "AwaitingUserInput" });
+    if (this.state.power !== "Off") {
+      this.setState({ gameState: "AwaitingUserInput" });
+      if (!this.state.strict) {  // game does not repeat sequence for strict mode
+        await timeout(sequenceReplay);  
+        // game checks if the user has not yet clickd any color && we are still awaiting input
+        // if so, the game repeats the sequence, in normal mode only
+        if (this.state.playerSequence.length === 0 && this.state.gameState === "AwaitingUserInput") {
+          this.runSequence();
+        }
+      }
+    }
   }
 
   incrementCount = () => {

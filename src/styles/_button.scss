@@ -56,7 +56,7 @@ button::-moz-focus-inner {
     border-right: none;
     border-bottom: none;
 
-    &:active:not(:disabled), &.active {   // ???? :active:not(:disabled) is needed for Firefox, else the button can still be :active despote being desabled????
+    &:active:not(:disabled), &.active {   // ???? :active:not(:disabled) is needed for Firefox, else the button can still be :active despite being desabled????
       background-color: lighten($color-yellow, 15%)
     }
   }
