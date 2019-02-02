@@ -189,10 +189,12 @@ class App extends React.Component<{}, AppState> {
     if (this.state.power !== "Off") {
       this.setState({ gameState: "AwaitingUserInput" });
       if (!this.state.strict) {  // game does not repeat sequence for strict mode
+        let sequenceLength = this.state.sequence.length;
         await timeout(sequenceReplay);  
-        // game checks if the user has not yet clickd any color && we are still awaiting input
+        // game checks if the user has not yet clickd any color && we are still awaiting input after the above timeout
+        // we also compare the length of sequence with the old value stored above, so that the sequence does not repeat if the player has moved to next turn. 
         // if so, the game repeats the sequence, in normal mode only
-        if (this.state.playerSequence.length === 0 && this.state.gameState === "AwaitingUserInput") {
+        if (this.state.playerSequence.length === 0 && this.state.gameState === "AwaitingUserInput" && sequenceLength === this.state.sequence.length) {
           this.runSequence();
         }
       }
